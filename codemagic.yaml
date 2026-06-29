@@ -3,6 +3,9 @@ workflows:
     name: Math Flow iOS App Store Build
     instance_type: mac_mini_m2
     environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.samjo.beastflowevolution
       node: latest
       xcode: latest
       cocoapods: default
@@ -13,9 +16,14 @@ workflows:
         script: npm run build
       - name: Sync Capacitor iOS project
         script: npx cap sync ios
-      - name: Build iOS workspace
+      - name: Build IPA for App Store
         script: |
-          cd ios/App
-          xcodebuild build -project App.xcodeproj -scheme App CODE_SIGNING_ALLOWED=NO -destination generic/platform=iOS
+          xcode-project build-ipa \
+            --project "ios/App/App.xcodeproj" \
+            --scheme "App"
     artifacts:
-      - ios/App/build/Release-iphoneos/*.app
+      - build/ios/ipa/*.ipa
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
