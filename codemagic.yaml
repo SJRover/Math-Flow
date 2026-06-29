@@ -1,0 +1,21 @@
+workflows:
+  ios-capacitor-app-store:
+    name: Math Flow iOS App Store Build
+    instance_type: mac_mini_m2
+    environment:
+      node: latest
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Install dependencies
+        script: npm install
+      - name: Build web assets
+        script: npm run build
+      - name: Sync Capacitor iOS project
+        script: npx cap sync ios
+      - name: Build iOS workspace
+        script: |
+          cd ios/App
+          xcodebuild build -workspace App.xcworkspace -scheme App CODE_SIGNING_ALLOWED=NO -destination generic/platform=iOS
+    artifacts:
+      - ios/App/build/Release-iphoneos/*.app
