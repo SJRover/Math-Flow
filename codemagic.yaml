@@ -16,6 +16,6 @@ workflows:
       - name: Build iOS workspace
         script: |
           cd ios/App
-          xcodebuild build -workspace App.xcworkspace -scheme App CODE_SIGNING_ALLOWED=NO -destination generic/platform=iOS
+          xcodebuild build -project App.xcodeproj -scheme App CODE_SIGNING_ALLOWED=NO -destination generic/platform=iOS
     artifacts:
       - ios/App/build/Release-iphoneos/*.app
