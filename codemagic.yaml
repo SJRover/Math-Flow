@@ -5,9 +5,6 @@ workflows:
     integrations:
       app_store_connect: "Personal"
     environment:
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.samjo.beastflowevolution
       node: latest
       xcode: latest
       cocoapods: default
