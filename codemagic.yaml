@@ -6,8 +6,6 @@ workflows:
       app_store_connect: "Personal"
     environment:
       groups:
-        - "Math Flow"
-        - math_flow
         - app_store_credentials
       node: latest
       xcode: latest
