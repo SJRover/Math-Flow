@@ -2,6 +2,8 @@ workflows:
   ios-capacitor-app-store:
     name: Math Flow iOS App Store Build
     instance_type: mac_mini_m2
+    integrations:
+      app_store_connect: "Apple Connect"
     environment:
       ios_signing:
         distribution_type: app_store
