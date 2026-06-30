@@ -17,10 +17,6 @@ workflows:
         script: npm run build
       - name: Sync Capacitor iOS project
         script: npx cap sync ios
-      - name: Automatically fetch Apple Developer profiles
-        script: |
-          app-store-connect fetch-signing-files "com.samjo.beastflowevolution" \
-            --type IOS_APP_STORE
       - name: Apply Codemagic UI signing profiles
         script: xcode-project use-profiles
       - name: Build IPA for App Store
