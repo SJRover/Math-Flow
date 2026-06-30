@@ -2,9 +2,9 @@ workflows:
   ios-capacitor-app-store:
     name: Math Flow iOS App Store Build
     instance_type: mac_mini_m2
-    integrations:
-      app_store_connect: "Personal"
     environment:
+      groups:
+        - app_store_credentials
       node: latest
       xcode: latest
       cocoapods: default
@@ -15,12 +15,7 @@ workflows:
         script: npm run build
       - name: Sync Capacitor iOS project
         script: npx cap sync ios
-      - name: Automatically create and fetch signing profiles
-        script: |
-          app-store-connect fetch-signing-files "com.samjo.beastflowevolution" \
-            --type IOS_APP_STORE \
-            --create
-      - name: Apply signing profiles to Xcode project
+      - name: Apply Codemagic UI signing profiles
         script: xcode-project use-profiles
       - name: Build IPA for App Store
         script: |
