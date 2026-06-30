@@ -1,0 +1,41 @@
+workflows:
+  ios-capacitor-app-store:
+    name: Math Flow iOS App Store Build
+    instance_type: mac_mini_m2
+    integrations:
+      app_store_connect: "Personal"
+    environment:
+      groups:
+        - app_store_credentials
+      node: latest
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Install dependencies
+        script: npm install
+      - name: Build web assets
+        script: npm run build
+      - name: Sync Capacitor iOS project
+        script: npx cap sync ios
+      - name: Apply Codemagic UI signing profiles
+        script: xcode-project use-profiles
+      - name: Build IPA for App Store
+        script: |
+          PROFILE_PATH=$(find ~/Library/MobileDevice/Provisioning\ Profiles -name "*.mobileprovision" | head -n 1)
+          if [ -z "$PROFILE_PATH" ]; then
+            echo "ERROR: No provisioning profile found! The app_store_credentials group failed to load."
+            exit 1
+          fi
+          PROFILE_UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" /dev/stdin <<< $(security cms -D -i "$PROFILE_PATH"))
+          echo "Force-feeding Profile UUID to Xcode: $PROFILE_UUID"
+          
+          xcode-project build-ipa \
+            --project "ios/App/App.xcodeproj" \
+            --scheme "App" \
+            --archive-flags="PROVISIONING_PROFILE_SPECIFIER=$PROFILE_UUID"
+    artifacts:
+      - build/ios/ipa/*.ipa
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
