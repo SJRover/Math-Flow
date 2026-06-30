@@ -21,10 +21,18 @@ workflows:
         script: xcode-project use-profiles
       - name: Build IPA for App Store
         script: |
+          PROFILE_PATH=$(find ~/Library/MobileDevice/Provisioning\ Profiles -name "*.mobileprovision" | head -n 1)
+          if [ -z "$PROFILE_PATH" ]; then
+            echo "ERROR: No provisioning profile found! The app_store_credentials group failed to load."
+            exit 1
+          fi
+          PROFILE_UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" /dev/stdin <<< $(security cms -D -i "$PROFILE_PATH"))
+          echo "Force-feeding Profile UUID to Xcode: $PROFILE_UUID"
+          
           xcode-project build-ipa \
             --project "ios/App/App.xcodeproj" \
             --scheme "App" \
-            --archive-flags="PROVISIONING_PROFILE_SPECIFIER=$CM_PROVISIONING_PROFILE"
+            --archive-flags="PROVISIONING_PROFILE_SPECIFIER=$PROFILE_UUID"
     artifacts:
       - build/ios/ipa/*.ipa
     publishing:
